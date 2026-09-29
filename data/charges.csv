@@ -1,0 +1,2 @@
+capacitorTotal,capacitorTotalUNC,airPressure,airTemperature,voltage,FOV,FPS,resolution,velocity,velocityE,travelDistance,capacitorDistance,capacitorDistanceUnc,airTemperatureUnc,airPressureUnc,voltageUnc,velocityUnc,velocityEUnc,charge,chargeUnc
+0.01991,6e-06,99.8,22.75,500.0,0.00445,19.8,1024,5.0625e-05,0.0002835,0.0005,0.004559,8.306623862918075e-06,0.5,0.1,0.0003,5.105094366975139e-07,8.484098628760883e-06,6.493699958511858e-19,1.722735957794855e-20
