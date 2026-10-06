@@ -54,18 +54,29 @@ def calculate(df):
     uncertainties = [df["velocityUnc"], df["velocityEUnc"], df["airTemperatureUnc"], df["airPressureUnc"], df["capacitorDistanceUnc"], df["voltageUnc"]]
  
     charge = velocity2charge(*values)
- 
-    variance = 0
+
+    contributions = []
     for i in range(len(values)):
         up = list(values)
         down = list(values)
         up[i] = values[i] + uncertainties[i]
         down[i] = values[i] - uncertainties[i]
-        contribution = (velocity2charge(*up) - velocity2charge(*down)) / 2
-        variance = variance + contribution**2
- 
+        contributions.append((velocity2charge(*up) - velocity2charge(*down)) / 2)
+
+    stat_variance = contributions[0]**2 + contributions[1]**2
+    systematic_contributions = {
+        "airTemperature": contributions[2],
+        "airPressure": contributions[3],
+        "capacitorDistance": contributions[4],
+        "voltage": contributions[5],
+    }
+    systematic_variance = sum(value**2 for value in systematic_contributions.values())
+
     df["charge"] = charge
-    df["chargeUnc"] = np.sqrt(variance)
+    df["chargeStatUnc"] = np.sqrt(stat_variance)
+    for name, contribution in systematic_contributions.items():
+        df[f"chargeSys_{name}"] = contribution
+    df["chargeUnc"] = np.sqrt(stat_variance + systematic_variance)
     return df
 
 # plotting
@@ -73,7 +84,8 @@ def plot_charges(df, filename="../charges.png"):
     sorted_df = df.sort_values("charge").reset_index(drop=True)
  
     fig, ax = plt.subplots(figsize=(8, 5))
-    ax.errorbar(sorted_df.index, sorted_df["charge"], yerr=sorted_df["chargeUnc"],
+    #ax.errorbar(sorted_df.index, sorted_df["charge"], yerr=sorted_df["chargeUnc"],
+    ax.errorbar(sorted_df.index, sorted_df["charge"] / 1.602, alpha=0.4, yerr=sorted_df["chargeUnc"],
                 fmt="o", capsize=3)
     ax.set_xlabel("Drop (arbitrary units, sorted by charge)")
     ax.set_ylabel("Charge (C)")
@@ -89,8 +101,7 @@ def plot_charges(df, filename="../charges.png"):
 
 calculate(df)
 
-print(df["chargeUnc"].isna().sum())
-
 df.to_csv("../data/charges.csv", index=False)
 plot_charges(df)
-# print(df['charge'] / accepted_q)
+print(df['charge'] / accepted_q)
+print(df['chargeUnc'])

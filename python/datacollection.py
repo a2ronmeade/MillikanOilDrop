@@ -8,7 +8,7 @@ Propagates the uncertainty in the necessary manner, and creates a new CSV (dropd
 can be used in velocity2charge.py.
 
 So before running this file, the csv should contain: 
-capacitorDistance, airPressure, airTemperature,voltage,velocity,velocityE, travelDistance - measured data
+airPressure, airTemperature,voltage,velocity,velocityE, travelDistance - measured data
 capacitor_total, FOV, FPS, resolution - uncertainties
 '''
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
@@ -44,12 +44,12 @@ def calc_pressure(df):
     return 0.1 # simple error of device
 
 def calc_voltage(df):
-    return 0.0003 # simple error of device
+    return 0.003 * 500.0 # simple error of device
 
 def calc_velocity(df, column):
     # v = distance / time, so the relative uncertainties add in quadrature
     velocity = df[column]
-    position_unc = FOV / resolution   # one pixel, in meters
+    position_unc = 5 * FOV / resolution   # five pixels, in meters
     time_unc = 1 / FPS                        # one frame, in seconds
     time = travel_distance / velocity                      # time the drop took
 
