@@ -91,6 +91,7 @@ def plot_charges(df, filename="../charges.png"):
     ax.set_ylabel("Charge (C)")
     ax.set_title("Measured drop charges")
     ax.set_xticks([])
+    ax.set_ylim(bottom=0)
     ax.grid(alpha=0.3)
     fig.tight_layout()
 
