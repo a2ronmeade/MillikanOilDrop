@@ -87,7 +87,7 @@ Q = (6 * pi * d / V) * sqrt( 9 * eta^3 / (2 * rho * g) ) * (v + vE) * sqrt(v) * 
 
 `charges.png` plots the drop charges sorted from smallest to largest. The plateaus in this plot are steps of one electron.
 
-## Step 4: Find the electron charge (`charge_to_e.py`)
+## Step 4: Find the electron charge (`charge2e.py`)
 
 1. **Initial guess.** Set `e_guess` from the smallest gap between plateaus in `charges.png`.
 3. **Iterate** (up to 10 times):
