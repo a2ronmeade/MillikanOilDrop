@@ -6,10 +6,12 @@ import matplotlib.pyplot as plt
 gravity = 9.8008 
 oil_density = 860
 correction_constant = 6.17e-6
+correction_constant_unc = 0.01e-6
 accepted_q = 1.602e-19
 reference_viscosity = 1.716e-5
 reference_temp = 273.15
 sutherland = 110.4
+sutherlandUnc = 1
 
 # read the data
 df = pd.read_csv('../data/dropdata.csv')
@@ -21,27 +23,24 @@ velocity, velocity_unc = df["velocity"], df["velocityUnc"]
 velocityE, velocityE_unc = df["velocityE"], df["velocityEUnc"]
 
 # formulas for calcuations
-def calculate_viscosity(temperature):
+def calculate_viscosity(temperature, sutherland_constant=sutherland):
     temp_kelvin = temperature + 273.15
-    viscosity = reference_viscosity * (temp_kelvin/reference_temp)**(3/2) * (reference_temp + sutherland)/(temp_kelvin + sutherland)
+    viscosity = reference_viscosity * (temp_kelvin/reference_temp)**(3/2) * (reference_temp + sutherland_constant)/(temp_kelvin + sutherland_constant)
     return viscosity
 
-def velocity2radius(velocity, temperature):
-
-    air_viscosity = calculate_viscosity(temperature)
-
+def velocity2radius(velocity, temperature, sutherland_constant=sutherland):
+    air_viscosity = calculate_viscosity(temperature, sutherland_constant)
     radius = np.sqrt((9 * air_viscosity * velocity)/(2 * gravity * oil_density))
     return radius
 
-def velocity2charge(velocity, velocityE, temperature, pressure, capacitor_distance, voltage):
-
-    air_viscosity = calculate_viscosity(temperature)
-    radius = velocity2radius(velocity, temperature)
+def velocity2charge(velocity,velocityE,temperature,pressure,capacitor_distance,voltage,correction_constant_value=correction_constant,sutherland_constant=sutherland,):
+    air_viscosity = calculate_viscosity(temperature, sutherland_constant)
+    radius = velocity2radius(velocity, temperature, sutherland_constant)
 
     term1 = (6 * np.pi * capacitor_distance) / voltage
     term2 = np.sqrt((9 * air_viscosity**3)/(2 * oil_density * gravity))
     term3 = (velocity + velocityE) * np.sqrt(velocity)
-    correction =(1 + correction_constant / (radius * pressure))**(-3/2)
+    correction =(1 + correction_constant_value / (radius * pressure))**(-3/2)
 
     charge = term1 * term2 * term3 * correction
 
@@ -70,6 +69,14 @@ def calculate(df):
         "capacitorDistance": contributions[4],
         "voltage": contributions[5],
     }
+    systematic_contributions["correctionConstant"] = (
+        velocity2charge(*values,correction_constant_value=correction_constant + correction_constant_unc,)
+        - velocity2charge(*values,correction_constant_value=correction_constant - correction_constant_unc,)
+    ) / 2
+    systematic_contributions["sutherlandConstant"] = (
+        velocity2charge(*values,sutherland_constant=sutherland + sutherlandUnc,)
+        - velocity2charge(*values,sutherland_constant=sutherland - sutherlandUnc,)
+    ) / 2
     systematic_variance = sum(value**2 for value in systematic_contributions.values())
 
     df["charge"] = charge

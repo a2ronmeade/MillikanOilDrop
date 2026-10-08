@@ -39,6 +39,7 @@ One row per drop:
 | `velocity` | velocity (field off) | m/s |
 | `velocityE` | velocity (field on) | m/s |
 | `travelDistance` | distance tracked for the velocity measurement | m |
+| `fitting uncertainty` | tracker fitting uncertainty, applied to both velocities | m/s |
 
 ## Step 2: Add uncertainties (`dropdata.csv`)
 
@@ -48,17 +49,18 @@ The datacollection script copies the measurements into `dropdata.csv` under the 
 
 Capacitor distance, temperature, pressure, and voltage uncertainties are instrument uncertainties.
 
-Velocity uncertainties come from the camera resolution and frame rate. Since v = distance / time, the relative uncertainties add in quadrature:
+Velocity uncertainties combine the camera resolution and frame rate contributions with the tracker fitting uncertainty. Since v = distance / time, the relative measurement uncertainties add in quadrature:
 
 ```
-position_unc = FOV / resolution              # one pixel, in m
+position_unc = 5 * FOV / resolution          # five pixels, in m
 time         = travelDistance / velocity     # time the drop took
 time_unc     = 1 / FPS                       # one frame, in s
 
-velocityUnc  = velocity * sqrt( (position_unc / travelDistance)^2 + (time_unc / time)^2 )
+velocityUnc  = sqrt( (velocity * sqrt((position_unc / travelDistance)^2 + (time_unc / time)^2))^2
+                     + (fitting uncertainty)^2 )
 ```
 
-The same formula is applied to `velocityE` to get `velocityEUnc`. Typical result is about 1% of the velocity. If `velocityUnc` comes out comparable to or larger than `velocity`, check units and that both ratios are squared as a whole.
+The same fitting uncertainty and formula are applied to `velocityE` to get `velocityEUnc`. Typical result is about 1% of the velocity. If `velocityUnc` comes out comparable to or larger than `velocity`, check units and that both ratios are squared as a whole.
 
 ## Step 3: Charge per drop (`velocity2charge.py`)
 
@@ -83,7 +85,7 @@ Q = (6 * pi * d / V) * sqrt( 9 * eta^3 / (2 * rho * g) ) * (v + vE) * sqrt(v) * 
 ```
 
 
-`chargeUnc` is found by error propagation for each input (velocity, velocityE, temperature, pressure, capacitor distance, voltage), take the partial derivative of `Q` with respect to that input, multiply by its uncertainty, and add the contributions in quadrature.
+`chargeUnc` is found by error propagation for each input (velocity, velocityE, temperature, pressure, capacitor distance, voltage, correction constant, and Sutherland constant), take the partial derivative of `Q` with respect to that input, multiply by its uncertainty, and add the contributions in quadrature. The correction-constant uncertainty (`correction_constant_unc`) and Sutherland-constant uncertainty (`sutherlandUnc`) are included with the systematic contributions.
 
 `charges.png` plots the drop charges sorted from smallest to largest. The plateaus in this plot are steps of one electron.
 

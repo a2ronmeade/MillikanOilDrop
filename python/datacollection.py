@@ -7,9 +7,9 @@ Reads in raw data: FPS, Camera Resolution, FOV, Capacitor measurements, Air Pres
 Propagates the uncertainty in the necessary manner, and creates a new CSV (dropdata.csv) which then 
 can be used in velocity2charge.py.
 
-So before running this file, the csv should contain: 
-airPressure, airTemperature,voltage,velocity,velocityE, travelDistance - measured data
-capacitor_total, FOV, FPS, resolution - uncertainties
+So before running this file, the csv should contain measured data:
+airPressure, airTemperature, voltage, velocity, velocityE, travelDistance
+capacitorTotal, capacitorTotalUNC, FOV, FPS, resolution, fitting uncertainty
 '''
 #-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=#
 os.makedirs('../data', exist_ok=True)
@@ -54,7 +54,9 @@ def calc_velocity(df, column):
     time = travel_distance / velocity                      # time the drop took
 
     relative_unc = np.sqrt((position_unc / travel_distance)**2 + (time_unc / time)**2)
-    return velocity * relative_unc
+
+    # fitting uncertainty from tracker software: 2.5%
+    return np.sqrt((velocity * relative_unc)**2 + (velocity * 0.025)**2)
 
 df["capacitorDistanceUnc"] = calc_capacitor(df)
 df["airTemperatureUnc"] = calc_temperature(df)

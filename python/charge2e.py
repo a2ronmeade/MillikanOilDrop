@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 os.makedirs("../iterations", exist_ok=True)
 
 # initial guess for e, read from the plateau spacing in charges.png - this should be based off of the smallest gap we see between steps
-e_guess = 1.8e-19
+e_guess = 1.65e-19
 
 # charges and uncertainties saved by velocity2charge.py
 df = pd.read_csv("../data/charges.csv")
