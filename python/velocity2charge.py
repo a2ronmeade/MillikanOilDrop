@@ -98,8 +98,8 @@ def plot_charges(df, filename="../charges.png"):
  
     fig, ax = plt.subplots(figsize=(8, 5))
     #ax.errorbar(sorted_df.index, sorted_df["charge"], yerr=sorted_df["chargeUnc"],
-    ax.errorbar(sorted_df.index, sorted_df["charge"] / 1.602e-19, alpha=0.7, yerr=sorted_df["chargeUnc"] / 1.602e-19,
-                fmt="o", capsize=3)
+    ax.errorbar(sorted_df.index, sorted_df["charge"], alpha=0.7, yerr=sorted_df["chargeUnc"],
+                fmt="o", capsize=3, label="Drop Charge(with uncertainty)")
     ax.set_xlabel("Drop (arbitrary units, sorted by charge)")
     #ax.set_ylabel("Charge (C)")
     ax.set_ylabel("Charge (C)")
@@ -107,6 +107,7 @@ def plot_charges(df, filename="../charges.png"):
     ax.set_xticks([])
     ax.set_ylim(bottom=0)
     ax.grid(alpha=0.3)
+    plt.legend()
     fig.tight_layout()
 
     fig.savefig(filename, dpi=200)
