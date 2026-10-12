@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
+plt.rcParams.update({'font.size': 16})
+
 # constants
 gravity = 9.8008 
 oil_density = 860
@@ -32,6 +34,8 @@ def calculate_viscosity(temperature, sutherland_constant=sutherland):
 def velocity2radius(velocity, temperature, sutherland_constant=sutherland):
     air_viscosity = calculate_viscosity(temperature, sutherland_constant)
     radius = np.sqrt((9 * air_viscosity * velocity)/(2 * gravity * oil_density))
+    #print("radius")
+    #print(radius)
     return radius
 
 def velocity2charge(velocity,velocityE,temperature,pressure,capacitor_distance,voltage,correction_constant_value=correction_constant,sutherland_constant=sutherland,):
@@ -44,7 +48,8 @@ def velocity2charge(velocity,velocityE,temperature,pressure,capacitor_distance,v
     correction =(1 + correction_constant_value / (radius * pressure))**(-3/2)
 
     charge = term1 * term2 * term3 * correction
-
+    #print("correction")
+    #print(correction)
     return charge
 
 # full calculation for the charges of the drops and uncertainty
@@ -93,11 +98,11 @@ def plot_charges(df, filename="../charges.png"):
  
     fig, ax = plt.subplots(figsize=(8, 5))
     #ax.errorbar(sorted_df.index, sorted_df["charge"], yerr=sorted_df["chargeUnc"],
-    ax.errorbar(sorted_df.index, sorted_df["charge"] / 1.602e-19, alpha=0.4, yerr=sorted_df["chargeUnc"] / 1.602e-19,
+    ax.errorbar(sorted_df.index, sorted_df["charge"] / 1.602e-19, alpha=0.7, yerr=sorted_df["chargeUnc"] / 1.602e-19,
                 fmt="o", capsize=3)
     ax.set_xlabel("Drop (arbitrary units, sorted by charge)")
     #ax.set_ylabel("Charge (C)")
-    ax.set_ylabel("Charge (C) / accepted e")
+    ax.set_ylabel("Charge (C)")
     ax.set_title("Measured drop charges")
     ax.set_xticks([])
     ax.set_ylim(bottom=0)

@@ -3,6 +3,8 @@ import pandas as pd
 import os
 import matplotlib.pyplot as plt
 
+plt.rcParams.update({'font.size': 16})
+
 os.makedirs("../iterations", exist_ok=True)
 
 # initial guess for e, read from the plateau spacing in charges.png - this should be based off of the smallest gap we see between steps
@@ -34,11 +36,11 @@ for iteration in range(10):
 
     # plot Q/N for this iteration
     plt.figure()
-    plt.errorbar(range(len(charge)), e_new[order], yerr=(charge_unc / n)[order], fmt="o", capsize=3)
+    plt.errorbar(range(len(charge)), e_new[order], yerr=(charge_unc / n)[order], fmt="o", capsize=3, label="Drop (with uncertainty)")
     plt.axhline(e_guess, color="red", label="weighted average")
     plt.xlabel("Drop (sorted by charge)")
     plt.ylabel("Q / n  (C)")
-    plt.title(f"Iteration {iteration + 1}")
+    plt.title(f"Drop Charge Divided by Integer Multiple of e_guess")
     plt.legend()
     plt.savefig(os.path.join("../iterations", f"iteration_{iteration + 1}.png"), dpi=200, bbox_inches="tight")
 
