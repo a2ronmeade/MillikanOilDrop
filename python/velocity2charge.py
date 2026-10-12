@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 # constants
 gravity = 9.8008 
 oil_density = 860
-correction_constant = 6.17e-6
+#correction_constant = 6.17e-6
+correction_constant = 6.17e-6 * 1.333224
 correction_constant_unc = 0.01e-6
 accepted_q = 1.602e-19
 reference_viscosity = 1.716e-5

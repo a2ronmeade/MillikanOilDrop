@@ -1,0 +1,11 @@
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+df = pd.read_csv('data/charges.csv')
+
+charges = df["charge"]
+
+plt.hist(charges, bins=100, range=(0, 1e-18))
+plt.show()
+
