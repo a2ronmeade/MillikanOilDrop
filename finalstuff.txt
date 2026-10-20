@@ -1,4 +1,6 @@
+(base) PS C:\Users\aaron\Repositories\5700\MillikanOilDrop\python> python3 .\charge2e.py
 iteration 1: e = 1.59107e-19 +/- 8.49e-22
 iteration 2: e = 1.59107e-19 +/- 8.49e-22
 
 Final: e = 1.5911e-19 +/- 8.5e-22 C
+chi2 = 131.45, dof = 49, reduced chi2 = 2.68

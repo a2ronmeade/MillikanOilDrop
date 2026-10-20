@@ -54,6 +54,13 @@ df["n"] = n
 df["eNew"] = e_new
 print(f"\nFinal: e = {e_guess:.4e} +/- {e_unc:.1e} C")
 
+# reduced chi-squared of Q_i vs n_i * e_final
+resid = (charge - n * e_guess) / charge_unc   # equivalently (e_new - e_guess) / (charge_unc / n)
+chi2 = np.sum(resid**2)
+dof = len(charge) - 1                          # N drops, 1 fitted parameter (e)
+chi2_red = chi2 / dof
+print(f"chi2 = {chi2:.2f}, dof = {dof}, reduced chi2 = {chi2_red:.2f}")
+
 # plot how the overall e estimate changes
 plt.figure()
 plt.errorbar(range(1, len(e_history) + 1), e_history, yerr=e_unc_history, fmt="o-", capsize=3)
